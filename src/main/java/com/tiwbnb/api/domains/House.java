@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
 public class House {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 	private String city;
 	@Temporal(TemporalType.DATE)
 	private Date startDate;
@@ -27,10 +27,10 @@ public class House {
 	private String fullDescription;
 	private String shortDescription;
 	private String imageUrl;
-	private int maxGuests;
+	private Integer maxGuests;
 	private String name;
-	private float price;
-	private boolean shared;
+	private Float price;
+	private Boolean shared;
 	
 	@ManyToOne (cascade=CascadeType.REMOVE)
 	@JoinColumn(name="ownerId")
@@ -133,6 +133,7 @@ public class House {
 		// TODO Auto-generated method stub
 		return this.id;
 	}
+	
 
 
 

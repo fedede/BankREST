@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -30,25 +32,17 @@ public class MainController {
 	@Autowired
 	HouseDAO daohouse;
 	
-	@RequestMapping("/test")
-	public @ResponseBody String home(){
-		Transaction tr = daotransaction.findTop1ById(1L).orElse(null);
-		if(tr != null){
-			return tr.getCardNum();
-		}
-		return "ERROR";
-		}
 	
 	@RequestMapping(method = RequestMethod.POST, value="/transactions/new")
-	public String saveTransaction(@RequestBody @Validated TransactionRequest ptransaction) {
+	public ResponseEntity<Transaction> saveTransaction(@RequestBody @Validated TransactionRequest ptransaction) {
 		//return ptransaction.getEndDate().toString();
 		User user = daouser.findById(ptransaction.getInvoiced()).orElse(null);
 		House house = daohouse.findById(ptransaction.getHouse()).orElse(null);
 		if(user == null){
-			return "WRONGUSER";
+			ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		}
 		if(house == null){
-			return "WRONGHOUSE";
+			ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		}
 		Transaction newTransaction = new Transaction(ptransaction);
 		newTransaction.setInvoiced(user);
@@ -56,10 +50,10 @@ public class MainController {
 		
 		try{
 			daotransaction.save(newTransaction);
-			return "SUCCESS";
+			return ResponseEntity.status(HttpStatus.CREATED).body(newTransaction);
 		}
 		catch (Exception e){
-			return e.getMessage();
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		}
 		
 		
@@ -67,32 +61,37 @@ public class MainController {
 	
 	
 	@RequestMapping("/transactions/{transactionId}/accept")
-	public String acceptTransaction(@PathVariable Long transactionId){
+	public ResponseEntity<Transaction> acceptTransaction(@PathVariable Long transactionId){
 		Transaction accepted =  daotransaction.findById(transactionId).orElse(null);
 		if(accepted == null){
-			return "WRONGTRANSACTION";
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		}
-		accepted.accept();
-		daotransaction.save(accepted);
-		return "SUCCESS";
+		if (accepted.getStatus().equals(Transaction.PENDING)){
+			accepted.accept();
+			daotransaction.save(accepted);
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(accepted);
+		}else{
+			
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+		}
 	}
 	
 	@RequestMapping("/transactions/{transactionId}/reject")
-	public String rejectTransaction(@PathVariable Long transactionId){
+	public ResponseEntity<Transaction> rejectTransaction(@PathVariable Long transactionId){
 		Transaction rejected =  daotransaction.findById(transactionId).orElse(null);
 		if(rejected == null){
-			return "WRONGTRANSACTION";
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		}
 		
 		if (rejected.getStatus().equals(Transaction.PENDING)){
 			
 			rejected.reject();
 			daotransaction.save(rejected);
-			return "SUCCESS";
+			return ResponseEntity.status(HttpStatus.ACCEPTED).body(rejected);
 			
 		}else{
 			
-			return "TRANSACTIONNOTPENDING";
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 					
 		}
 		
