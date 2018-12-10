@@ -33,9 +33,8 @@ public class MainController {
 	HouseDAO daohouse;
 	
 	
-	@RequestMapping(method = RequestMethod.POST, value="/transactions/new")
+	@RequestMapping(method = RequestMethod.POST, value="/transaction/new")
 	public ResponseEntity<Transaction> saveTransaction(@RequestBody @Validated TransactionRequest ptransaction) {
-		//return ptransaction.getEndDate().toString();
 		User user = daouser.findById(ptransaction.getInvoiced()).orElse(null);
 		House house = daohouse.findById(ptransaction.getHouse()).orElse(null);
 		if(user == null){
@@ -60,7 +59,7 @@ public class MainController {
 	}
 	
 	
-	@RequestMapping("/transactions/{transactionId}/accept")
+	@RequestMapping("/transaction/{transactionId}/accept")
 	public ResponseEntity<Transaction> acceptTransaction(@PathVariable Long transactionId){
 		Transaction accepted =  daotransaction.findById(transactionId).orElse(null);
 		if(accepted == null){
@@ -76,7 +75,7 @@ public class MainController {
 		}
 	}
 	
-	@RequestMapping("/transactions/{transactionId}/reject")
+	@RequestMapping("/transaction/{transactionId}/reject")
 	public ResponseEntity<Transaction> rejectTransaction(@PathVariable Long transactionId){
 		Transaction rejected =  daotransaction.findById(transactionId).orElse(null);
 		if(rejected == null){

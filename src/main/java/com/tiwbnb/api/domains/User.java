@@ -24,7 +24,7 @@ public class User implements Serializable {
 	private String surname;
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
-	private boolean isAdmin;
+	private boolean admin;
 	/*
 	@OneToMany (mappedBy="user",
 				cascade=CascadeType.ALL,
@@ -68,11 +68,11 @@ public class User implements Serializable {
 	}
 
 	public boolean isAdmin() {
-		return isAdmin;
+		return this.admin;
 	}
 
-	public void setAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 }
