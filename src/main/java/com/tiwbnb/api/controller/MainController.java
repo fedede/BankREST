@@ -59,7 +59,7 @@ public class MainController {
 	}
 	
 	
-	@RequestMapping("/transaction/{transactionId}/accept")
+	@RequestMapping(method = RequestMethod.GET, value="/transaction/{transactionId}/accept")
 	public ResponseEntity<Transaction> acceptTransaction(@PathVariable Long transactionId){
 		Transaction accepted =  daotransaction.findById(transactionId).orElse(null);
 		if(accepted == null){
@@ -71,11 +71,11 @@ public class MainController {
 			return ResponseEntity.status(HttpStatus.ACCEPTED).body(accepted);
 		}else{
 			
-			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 		}
 	}
 	
-	@RequestMapping("/transaction/{transactionId}/reject")
+	@RequestMapping(method = RequestMethod.GET, value="/transaction/{transactionId}/reject")
 	public ResponseEntity<Transaction> rejectTransaction(@PathVariable Long transactionId){
 		Transaction rejected =  daotransaction.findById(transactionId).orElse(null);
 		if(rejected == null){
@@ -90,7 +90,7 @@ public class MainController {
 			
 		}else{
 			
-			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+			return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(null);
 					
 		}
 		
